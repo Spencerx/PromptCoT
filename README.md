@@ -6,15 +6,17 @@
 ### **✨ The Missing Piece for Test-Time Scaling**  
 A **lightweight yet powerful problem generation model** that enables the construction of **prompt sets at any scale with sufficient quality**—perfect for initializing your **post-training project**, whether it's **Supervised Fine-Tuning (SFT) or Reinforcement Learning (RL)**. Say goodbye to the limitations of open-source data!  
 
-### **📖 A Fully Open Project**
+### **📖 A Fully Open Project**  
 - **📂 Open-Source Problem Generation Model**  
-  - **Model**: [Download Pre-Trained Problem Generation Model (ModelScope)](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-Problem-Generation-Model)  
-  - **Training Data**: [Download Training Data for Problem Generation (ModelScope)](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-Problem-Generation-Dataset)  
-
+  - **Model**: [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-Problem-Generation-Model) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-Problem-Generation-Model)  
+  - **Training Data**: [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-Problem-Generation-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-Problem-Generation-Dataset)  
 - **🔹 Open-Source Distilled Models for Mathematical Reasoning**  
-  - **PromptCoT-DS-1.5B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B**, **1.5B parameters**) → [Download from ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-1.5B)  
-  - **PromptCoT-DS-7B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B**, **7B parameters**) → [Download from ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-7B)  
-  - **Training Data for Supervised Fine-Tuning (SFT) of Reasoning Models** → [Download from ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-DS-Dataset)  
+  - **PromptCoT-DS-1.5B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B, 1.5B parameters**)  
+    [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-1.5B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-1.5B)  
+  - **PromptCoT-DS-7B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B, 7B parameters**)  
+    [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-7B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-7B)  
+  - **Training Data for Supervised Fine-Tuning (SFT) of Reasoning Models**  
+    [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-DS-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-DS-Dataset)  
 
 ### **🏆 Superior Performance**  
 - **Consistent Improvements over Deepseek Counterparts**
@@ -83,7 +85,6 @@ pip install sentence_transformers==3.2.1 scikit-learn==1.3.2 scipy==1.10.1 faiss
 pip install str2bool
 ```
 
-
 ### **2. Generating Problems**
 #### **Step 1: Generate Concept Embeddings**
 We first encode mathematical concepts into embeddings to enable efficient sampling:
@@ -108,7 +109,7 @@ python concept_sampling.py \
 ```
 
 #### **Step 3: Generate Math Problems**
-Using a pre-trained [problem generation model](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-Problem-Generation-Model), we generate Olympiad-level math problems:
+Using the **pre-trained problem generation model** – available on [**Hugging Face**](https://huggingface.co/xl-zhao/PromptCoT-Problem-Generation-Model) | [**ModelScope**](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-Problem-Generation-Model) – we generate Olympiad-level math problems:  
 
 ```bash
 python problem_generation.py \
@@ -155,7 +156,7 @@ python problem_filtering.py \
   --n_rewards 2
 ```
 
-📌 **Our curated dataset of high-quality problems** (where each problem received **perfect ratings** across all evaluation criteria) is available here:  **[PromptCoT Problem Dataset](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-Problem-Generation-Dataset)**
+📌 **Our curated dataset of high-quality problems** (where each problem received **perfect ratings** across all evaluation criteria) is available here: [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-Problem-Generation-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-Problem-Generation-Dataset)
 
 ---
 
