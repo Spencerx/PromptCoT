@@ -83,7 +83,6 @@ pip install sentence_transformers==3.2.1 scikit-learn==1.3.2 scipy==1.10.1 faiss
 pip install str2bool
 ```
 
----
 
 ### **2. Generating Problems**
 #### **Step 1: Generate Concept Embeddings**
