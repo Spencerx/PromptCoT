@@ -15,11 +15,11 @@ A **lightweight yet powerful problem generation model** that enables the constru
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-1.5B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-1.5B)  
   - **PromptCoT-DS-7B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B, 7B parameters**)  
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-7B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-7B)  
-  - <span style="color:red;">**(New) 🚀**</span> **PromptCoT-QwQ-32B** (**Distilled from QwQ-32B, 32B parameters**)
+  - **[New] 🚀** **PromptCoT-QwQ-32B** (**Distilled from QwQ-32B, 32B parameters**)
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-QwQ-32B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-QwQ-32B)  
   - **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-DS Series Models**  
     [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-DS-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-DS-Dataset)  
-  - <span style="color:red;">**(New) 🚀**</span> **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-QwQ-32B**  
+  - **[New] 🚀** **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-QwQ-32B**  
     [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-QwQ-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-QwQ-Dataset)  
 
 
