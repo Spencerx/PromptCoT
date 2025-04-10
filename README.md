@@ -15,11 +15,11 @@ A **lightweight yet powerful problem generation model** that enables the constru
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-1.5B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-1.5B)  
   - **PromptCoT-DS-7B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B, 7B parameters**)  
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-7B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-7B)  
-  - **[New] 🚀** **PromptCoT-QwQ-32B** (**Distilled from QwQ-32B, 32B parameters**)
+  - **[New] 🚀🚀🚀** **PromptCoT-QwQ-32B** (**Distilled from QwQ-32B, 32B parameters**)
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-QwQ-32B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-QwQ-32B)  
   - **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-DS Series Models**  
     [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-DS-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-DS-Dataset)  
-  - **[New] 🚀** **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-QwQ-32B**  
+  - **[New] 🚀🚀🚀** **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-QwQ-32B**  
     [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-QwQ-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-QwQ-Dataset)  
 
 
@@ -53,7 +53,7 @@ A **lightweight yet powerful problem generation model** that enables the constru
 | **S1-32B**                                   | -                | 93.0%               | 56.7%               | 26.6%               |
 | **LIMO-32B**                                 | -                | 94.8%               | 57.1%               | 46.6%               |
 | **QwQ-32B**                                  | -                | -                   | 82.1%               | 70.8%               |
-| **PromptCoT-QwQ-32B** (**ours**)             | 🔥 **96.4% ± 0.2%** | 🔥 **96.7% ± 0.5%**   | 🔥 **83.8% ± 2.8%** | 🔥 **75.4% ± 4.7%** |
+| **PromptCoT-QwQ-32B** (**ours**)             | 🔥🔥 **96.4% ± 0.2%** | 🔥🔥 **96.7% ± 0.5%**   | 🔥🔥 **83.8% ± 2.8%** | 🔥🔥 **75.4% ± 4.7%** |
 
 - **Challenging RL-Based Methods Without RL**  
   Despite relying purely on distillation, **PromptCoT-DS-1.5B** achieves competitive results against RL-based models like **STILL-3-1.5B-preview** and **DeepScaleR-1.5B-Preview**, highlighting the strength of our problem generation pipeline.  
@@ -233,7 +233,7 @@ python calc_acc.py \
   --output_path data/{dataset_name}_predictions.jsonl
 ```
 
-#### **[New] 🚀** **Step 4: Train with DeepSpeed**
+#### **[New] ** **Step 4: Train with DeepSpeed**
 
 You can reproduce the training process for the model using DeepSpeed with the following commands. Make sure to replace the paths with your own data and model paths.
 
