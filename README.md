@@ -15,8 +15,13 @@ A **lightweight yet powerful problem generation model** that enables the constru
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-1.5B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-1.5B)  
   - **PromptCoT-DS-7B** (**Distilled from DeepSeek-R1-Distill-Qwen-7B, 7B parameters**)  
     [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-DS-7B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-DS-7B)  
-  - **Training Data for Supervised Fine-Tuning (SFT) of Reasoning Models**  
+  - <span style="color:red;">**(New) 🚀**</span> **PromptCoT-QwQ-32B** (**Distilled from QwQ-32B, 32B parameters**)
+    [Hugging Face](https://huggingface.co/xl-zhao/PromptCoT-QwQ-32B) | [ModelScope](https://www.modelscope.cn/models/zhaoxlpku/PromptCoT-QwQ-32B)  
+  - **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-DS Series Models**  
     [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-DS-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-DS-Dataset)  
+  - <span style="color:red;">**(New) 🚀**</span> **Training Data for Supervised Fine-Tuning (SFT) of PromptCoT-QwQ-32B**  
+    [Hugging Face](https://huggingface.co/datasets/xl-zhao/PromptCoT-QwQ-Dataset) | [ModelScope](https://www.modelscope.cn/datasets/zhaoxlpku/PromptCoT-QwQ-Dataset)  
+
 
 ### **🏆 Superior Performance**  
 - **Consistent Improvements over Deepseek Counterparts**
@@ -26,7 +31,7 @@ A **lightweight yet powerful problem generation model** that enables the constru
   - **+9.2%** absolute improvement on **AIME2025** (**49.2%** vs. **40.0%**)  
 
 - **Competitive with 32B Models**  
-  Despite having only 7B parameters, **PromptCoT-DS-7B** achieves results comparable to larger 32B models such as **S1-32B**, **QwQ-32B**, and **LIMO-32B**.
+  Despite having only 7B parameters, **PromptCoT-DS-7B** achieves results comparable to larger 32B models such as **S1-32B** and **LIMO-32B**.
 
 **Performance Comparison of Different Models**
 
@@ -45,9 +50,10 @@ A **lightweight yet powerful problem generation model** that enables the constru
 | **PromptCoT-DS-7B** (**ours**)               | 🔥 **92.8% ± 0.5%** | 🔥 **93.7% ± 0.7%**  | 🔥 **58.7% ± 3.1%**  | 🔥 **49.2% ± 7.9%**  |
 | **🔹 32B Models**                            |                  |                     |                     |                     |
 | **DeepSeek-R1-Distill-Qwen-32B**             | -                | 94.3%               | 72.6%               | -                   |
-| **QwQ-32B**                                  | -                | 90.6%               | 50.0%               | -                   |
 | **S1-32B**                                   | -                | 93.0%               | 56.7%               | 26.6%               |
 | **LIMO-32B**                                 | -                | 94.8%               | 57.1%               | 46.6%               |
+| **QwQ-32B**                                  | -                | -                   | 82.1%               | 70.8%               |
+| **PromptCoT-QwQ-32B** (**ours**)             | 🔥 **96.4% ± 0.2%** | 🔥 **96.7% ± 0.5%**   | 🔥 **83.8% ± 2.8%** | 🔥 **75.4% ± 4.7%** |
 
 - **Challenging RL-Based Methods Without RL**  
   Despite relying purely on distillation, **PromptCoT-DS-1.5B** achieves competitive results against RL-based models like **STILL-3-1.5B-preview** and **DeepScaleR-1.5B-Preview**, highlighting the strength of our problem generation pipeline.  
@@ -179,6 +185,8 @@ pip install -r requirements.txt --ignore-installed --no-deps
 ```
 
 #### **Step 2: Run Inference on Benchmark Datasets**
+To run inference for the PromptCoT-DS series models, use the following command:
+
 ```bash
 python infer_longcot.py \
   --data_path data/{dataset_name}.jsonl \
@@ -200,11 +208,53 @@ and `{model_name}` can be:
 - `PromptCoT-DS-1.5B`
 - `PromptCoT-DS-7B`
 
+To run inference for PromptCoT-QwQ-32B, use the following command:
+
+```bash
+python infer_longcot.py \
+  --data_path data/qwq/qwq_{dataset_name}_test.jsonl \
+  --output_path data/qwq/qwq_{dataset_name}_predictions.jsonl \
+  --model_path /path/to/PromptCoT-QwQ-32B \
+  --tokenizer_path /path/to/QwQ-32B \
+  --n_gpus 2 \
+  --temperature 0.6 \
+  --max_len 16384
+  --n 8
+```
+where `{dataset_name}` can be:
+- `gsm8k`
+- `math500`
+- `aime2024`
+- `aime2025`
+
 #### **Step 3: Compute Accuracy**
 ```bash
 python calc_acc.py \
   --output_path data/{dataset_name}_predictions.jsonl
 ```
+
+#### **(New) 🚀** **Step 4: Train with DeepSpeed**
+
+You can reproduce the training process for the model using DeepSpeed with the following commands. Make sure to replace the paths with your own data and model paths.
+
+- **For PromptCoT-DS-1.5B**:
+
+```bash
+deepspeed --num_gpus=8 train.py --bf16=True --data_path=/path/to/PromptCoT-DS-Dataset --ddp_find_unused_parameters=False --deepspeed=configs/promptcot_ds_1_5b_config.json --evaluation_strategy=no --fp16=False --gradient_accumulation_steps=8 --gradient_checkpointing=True --learning_rate=5e-06 --load_best_model_at_end=False --logging_steps=1 --model_max_length=16384 --model_name_or_path=/path/to/DeepSeek-R1-Distill-Qwen-1.5B --num_train_epochs=2 --output_dir=/path/to/PromptCoT-DS-1.5B --per_device_train_batch_size=1 --resume_from_checkpoint=False --save_steps=500 --save_strategy=steps --save_total_limit=6 --tokenizer_path=/path/to/DeepSeek-R1-Distill-Qwen-1.5B --warmup_steps=100 --weight_decay=0.01
+```
+
+- **For PromptCoT-DS-7B**:
+
+```bash
+deepspeed --num_gpus=8 train.py --bf16=True --data_path=/path/to/PromptCoT-DS-Dataset --ddp_find_unused_parameters=False --deepspeed=configs/promptcot_ds_7b_config.json --evaluation_strategy=no --fp16=False --gradient_accumulation_steps=8 --gradient_checkpointing=True --learning_rate=5e-06 --load_best_model_at_end=False --logging_steps=1 --model_max_length=16384 --model_name_or_path=/path/to/DeepSeek-R1-Distill-Qwen-7B --num_train_epochs=2 --output_dir=/path/to/PromptCoT-DS-7B --per_device_train_batch_size=1 --resume_from_checkpoint=False --save_steps=500 --save_strategy=steps --save_total_limit=6 --tokenizer_path=/path/to/DeepSeek-R1-Distill-Qwen-7B --warmup_steps=100 --weight_decay=0.01
+```
+
+- **For PromptCoT-QwQ-32B**:
+
+```bash
+deepspeed --num_gpus=8 train.py --bf16=True --data_path=/path/to/PromptCoT-QwQ-Dataset --ddp_find_unused_parameters=False --deepspeed=configs/promptcot_qwq_32b_config.json --evaluation_strategy=no --fp16=False --gradient_accumulation_steps=2 --gradient_checkpointing=True --learning_rate=2e-06 --load_best_model_at_end=False --logging_steps=1 --model_max_length=16384 --model_name_or_path=/path/to/QwQ-32B --num_train_epochs=2 --output_dir=/path/to/PromptCoT-QwQ-32B --per_device_train_batch_size=1 --resume_from_checkpoint=False --save_steps=500 --save_strategy=steps --save_total_limit=6 --tokenizer_path=/path/to/QwQ-32B --warmup_steps=100 --weight_decay=0.01
+```
+
 
 ---
 
