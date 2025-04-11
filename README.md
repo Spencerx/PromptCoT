@@ -233,7 +233,7 @@ python calc_acc.py \
   --output_path data/{dataset_name}_predictions.jsonl
 ```
 
-#### **[New] ** **Step 4: Train with DeepSpeed**
+#### **[New]** **Step 4: Train with DeepSpeed**
 
 You can reproduce the training process for the model using DeepSpeed with the following commands. Make sure to replace the paths with your own data and model paths.
 
