@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/5BCD074C-28D6-442D-8AEA-25F1DE70E939.png" alt="PromptCoT 2.0 Logo" width="600"/>
+  <img src="assets/d54677c190135988a485751bb8ebb268.png" alt="PromptCoT 2.0 Logo" width="600"/>
 </p>
 
 ---
@@ -35,7 +35,7 @@ Unleash the PromptCoT tide of reasoning!
 **Self-Play @ Qwen3-30B-A3B-2507-Thinking:**  
 
 <p align="center">
-  <img src="assets/367227C9-DBB4-410E-AC58-EFA32FBE87D8.png" width="95%" alt="PromptCoT 2.0 Self-Play (30B-A3B) vs baselines"/>
+  <img src="assets/87abc8046464863cfd1149fc94e47747.png" width="95%" alt="PromptCoT 2.0 Self-Play (30B-A3B) vs baselines"/>
 </p>
 <p align="center">
   <em>
@@ -47,7 +47,7 @@ Unleash the PromptCoT tide of reasoning!
 **SFT @ Qwen2.5-7B-Instruct:**  
 
 <p align="center">
-  <img src="assets/2668.jpg" width="95%" alt="PromptCoT 2.0 SFT (7B) vs OpenCodeReasoning vs OpenMathReasoning"/>
+  <img src="assets/2ec3a1b84d730fa20c30e9f8079860a3.png" width="95%" alt="PromptCoT 2.0 SFT (7B) vs OpenCodeReasoning vs OpenMathReasoning"/>
 </p>
 <p align="center">
   <em>
