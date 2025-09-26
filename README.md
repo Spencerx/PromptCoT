@@ -64,14 +64,14 @@ Unleash the PromptCoT tide of reasoning!
 the first framework to scale prompt synthesis across both math and programming, enabling 30B self-play competitive with Gemini 2.5 Pro / OpenAI o3, and 7B SFT (100% synthetic prompts) surpassing human-written baselines.  
 
 **📂 Resources**  
-- **SFT Data (4.8M fully synthetic prompts + trajectories)**: [PromptCoT-2.0-SFT-4.8M](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SFT-4.8M)  
-- **SFT Model (7B)**: [PromptCoT-2.0-SFT-7B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SFT-7B)  
-- **Self-Play Data**: [PromptCoT-2.0-SelfPlay-30B-11K](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SelfPlay-30B-11K) and [PromptCoT-2.0-SelfPlay-4B-48K](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SelfPlay-4B-48K)  
-- **Self-Play Models**: [PromptCoT-2.0-SelfPlay-30B-A3B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SelfPlay-30B-A3B) and [PromptCoT-2.0-SelfPlay-4B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SelfPlay-4B)  
-- **Problem Generation Model**: [PromptCoT-2.0-Prompt-Generation-Model](https://huggingface.co/xl-zhao/PromptCoT-2.0-Prompt-Generation-Model)  
+- **SFT Data (4.8M fully synthetic prompts + trajectories)**: [PromptCoT-2.0-SFT-4.8M](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SFT-4.8M).
+- **SFT Model (7B)**: [PromptCoT-2.0-SFT-7B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SFT-7B).
+- **Self-Play Data**: [PromptCoT-2.0-SelfPlay-30B-11K](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SelfPlay-30B-11K) and [PromptCoT-2.0-SelfPlay-4B-48K](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SelfPlay-4B-48K).
+- **Self-Play Models**: [PromptCoT-2.0-SelfPlay-30B-A3B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SelfPlay-30B-A3B) and [PromptCoT-2.0-SelfPlay-4B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SelfPlay-4B).  
+- **Problem Generation Model**: [PromptCoT-2.0-Prompt-Generation-Model](https://huggingface.co/xl-zhao/PromptCoT-2.0-Prompt-Generation-Model).  
 
 
-[2025/05/30] We release [PromptCoT-Mamba](https://arxiv.org/abs/2505.22425) ([PromptCoT-Mamba-7B](https://huggingface.co/xl-zhao/PromptCoT-Mamba-7B)):  
+[2025/05/30] We release [PromptCoT-Mamba](https://arxiv.org/abs/2505.22425) ([🤗 PromptCoT-Mamba-7B](https://huggingface.co/xl-zhao/PromptCoT-Mamba-7B)):  
 the first attention-free reasoning model, combining PromptCoT with Mamba-2 to achieve strong math & code performance with constant-memory inference.  
 
 
