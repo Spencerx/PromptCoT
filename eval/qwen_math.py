@@ -1,34 +1,21 @@
+import json
+import multiprocessing
+import os
 import random
-import regex
 import re
+from collections import defaultdict
+from math import isclose
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, TypeVar, Union
+
+import numpy as np
+import regex
 import sympy
 from latex2sympy2 import latex2sympy
-from typing import TypeVar, Iterable, List, Union, Any, Dict
-from word2number import w2n
-# from utils import *
-import os
-import json
-import random
-import json
-import os
-import numpy as np
-from pathlib import Path
-from typing import Iterable, Union, Any
-
-import json
-
-
-import re
-import regex
-import multiprocessing
-from math import isclose
-from typing import Union
-from collections import defaultdict
-
-from sympy import simplify, N
-from sympy.parsing.sympy_parser import parse_expr
+from sympy import N, simplify
 from sympy.parsing.latex import parse_latex
-from latex2sympy2 import latex2sympy
+from sympy.parsing.sympy_parser import parse_expr
+from word2number import w2n
 
 
 def get_examples():

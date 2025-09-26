@@ -19,7 +19,6 @@ def process_split_worker(split_id: int, data_split: List[Dict], args_dict: Dict,
     import torch
     from vllm import LLM, SamplingParams
     from transformers import AutoTokenizer
-    import ring
 
     print(f"Split {split_id}: Processing {len(data_split)} items on GPUs {gpu_ids}")
     print(f"Split {split_id}: CUDA_VISIBLE_DEVICES = {os.environ.get('CUDA_VISIBLE_DEVICES')}")

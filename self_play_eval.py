@@ -169,7 +169,6 @@ def test_item_completions(item: Dict, num_workers: int, eval_type: str) -> Dict:
 
     elif eval_type == "math":
         from eval.qwen_math import math_equal, extract_answer, strip_string
-        # from math_verify import parse, verify
 
         answer = item.get("answer", "")
         completions = item.get("completions", [])
@@ -178,7 +177,6 @@ def test_item_completions(item: Dict, num_workers: int, eval_type: str) -> Dict:
         if not answer and not completions:
             raise ValueError("No answer provided and no completions available for majority voting")
 
-        ### --- old version --- ###
         if item["source"] == "PromptCoT-Math":
             assert answer is not None and answer.strip() != ""
 
@@ -242,48 +240,6 @@ def test_item_completions(item: Dict, num_workers: int, eval_type: str) -> Dict:
 
             test_results = completion_results
 
-        ### --- old version --- ###
-
-
-
-        ### ---  new version --- ###
-        # if item["source"] == "PromptCoT-Math":
-        #     assert answer is not None and answer.strip() != ""  # todo: del
-        #
-        # if not answer:
-        #     answer_counts = {}
-        #     for completion in completions:
-        #         found_match = False
-        #         for existing_completion in answer_counts:
-        #             if verify(
-        #                 parse(get_after_think(existing_completion)),
-        #                 parse(get_after_think(completion)),
-        #             ):
-        #                 answer_counts[existing_completion] += 1
-        #                 found_match = True
-        #                 break
-        #         if not found_match:
-        #             answer_counts[completion] = 1
-        #
-        #     # Get the answer with the highest count
-        #     if answer_counts:
-        #         sorted_answer_counts = sorted(answer_counts.items(), key=lambda x: x[1], reverse=True)
-        #         if len(sorted_answer_counts) == 1:
-        #             answer = parse(get_after_think(sorted_answer_counts[0][0]))
-        #         elif sorted_answer_counts[0][1] > sorted_answer_counts[1][1]:
-        #             answer = parse(get_after_think(sorted_answer_counts[0][0]))
-        #         else:
-        #             item["solved"] = False
-        #             item["test_results"] = []
-        #             return item
-        #     else:
-        #         item["solved"] = False
-        #         item["test_results"] = []
-        #         return item
-        #
-        # test_results = [test_completion_worker_math(completion, answer) for completion in completions]
-        ### --- new version --- ###
-
     else:
         raise ValueError(f"Unknown evaluation type: {eval_type}. Must be 'code' or 'math'")
 
@@ -311,10 +267,7 @@ def main():
     # Validate eval_type and check required dependencies
     if args.eval_type == "math":
         try:
-            # from eval.math_equivalence import is_equiv_minerva
-            # from eval.util import last_boxed_only_string, remove_boxed
-            # from eval.qwen_math import math_equal, extract_answer, strip_string
-            from math_verify import parse, verify
+            from eval.qwen_math import math_equal, extract_answer, strip_string
         except ImportError:
             print(
                 "Error: Math evaluation dependencies not found. Please ensure eval.qwen_math is available.")
