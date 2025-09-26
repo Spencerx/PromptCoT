@@ -1,134 +1,403 @@
-# **PromptCoT & PromptCoT-Mamba: Advancing the Frontiers of Reasoning**
+<h1 align="center">PromptCoT 2.0</h1>
+
+<p align="center">
+  <b>Scaling Prompt Synthesis for LLM Reasoning</b>
+</p>
+
+<p align="center">
+  <a href="https://arxiv.org/abs/2509.19894">📄 Paper</a> •
+  <a href="https://huggingface.co/collections/xl-zhao/promptcot-20-68d27cd73f2faef5a12f777d">🤗 Hugging Face</a>
+</p>
+
+<p align="center">
+  <img src="assets/5BCD074C-28D6-442D-8AEA-25F1DE70E939.png" alt="PromptCoT 2.0 Logo" width="600"/>
+</p>
 
 ---
 
-## **News**
+## ✨ Overview
 
-*   **May 30, 2025**: PromptCoT-Mamba released! Introducing an attention-free foundation model for reasoning tasks.
-*   **Apr 11, 2025**: PromptCoT-QwQ-32B model and its training data released, achieving new state-of-the-art results.
-*   **Mar 7, 2025**: PromptCoT project launched, including the problem generation model, distilled models (PromptCoT-DS series), and associated datasets.
+PromptCoT 2.0 is a principled and scalable framework for **prompt synthesis** that substantially advances LLM reasoning in both **mathematics** and **programming**.  
 
----
+It introduces an **EM-style rationale-driven synthesis loop** (*concept → rationale → problem*), enabling the automatic generation of diverse and challenging problems at scale. These synthetic prompts support two complementary training regimes:  
 
-## **Overview**
+**Self-Play**: the model improves autonomously by learning from verifiable signals (e.g., unit tests for code, boxed answers for math). With this approach, a **30B-A3B self-play model** achieves **92.1 on AIME24, 89.8 on AIME25, and 76.7 on HMMT Feb25**, as well as **74.2 on LiveCodeBench v5, 71.0 on v6, and 2079 Elo on Codeforces**. These results surpass strong open-source baselines (Qwen3-30B-A3B-Thinking) and achieve **competitive performance** with closed-source leaders such as Gemini 2.5 Pro and OpenAI o3 across math and code.
 
-This repository unifies two synergistic projects aimed at advancing the frontiers of mathematical and code reasoning in Large Language Models (LLMs): **PromptCoT** and **PromptCoT-Mamba**.
+**SFT**: a **7B** model trained **100% on synthetic data**—using prompts synthesized by PromptCoT 2.0 and **complete reasoning trajectories distilled from GPT-OSS-120B (medium)**—reaches **73.1 on AIME24, 65.6 on AIME25, and 1815 Elo on Codeforces**, outperforming counterparts trained on **human-written prompts**.
 
-**PromptCoT (Synthesizing Olympiad-Level Problems for Mathematical Reasoning in Large Language Models)** addresses the critical challenge of acquiring high-quality, complex problems for training advanced LLMs. It introduces a novel methodology to systematically generate Olympiad-level mathematical problems by modeling the rationale behind expert problem design. This approach not only enhances problem diversity and difficulty but also ensures logical consistency in problem construction, providing a scalable solution for creating robust training datasets.
 
-**PromptCoT-Mamba (Scaling Reasoning without Attention)** leverages the problem generation capabilities of the PromptCoT pipeline to train **PromptCoT-Mamba-7B**, the first attention-free foundation model based on the Mamba-2 architecture. This model demonstrates that structured training curricula can enable attention-free models to surpass strong Transformer baselines on a wide array of competition-level math and code reasoning tasks, all while maintaining constant-memory inference without KV caching.
-
-Together, these projects offer a powerful suite of tools, models, and datasets for researchers and developers working on the cutting edge of AI reasoning.
+Unleash the PromptCoT tide of reasoning!
 
 ---
 
-## **Highlights & Key Results**
+## ⚡ Main Results
 
-### **1. PromptCoT: Problem Generation & Distilled Models**
+**Self-Play @ Qwen3-30B-A3B-2507-Thinking:**  
 
-*   **✨ The Missing Piece for Test-Time Scaling**: A lightweight yet powerful problem generation model enabling the construction of prompt sets at any scale with sufficient quality, perfect for SFT or RL post-training.
-*   **📖 A Fully Open Project**: All models (generation, distilled LLMs) and datasets (generation inputs, SFT data) are open-sourced.
-*   **🏆 Superior Performance of Distilled Models**:
-    *   **PromptCoT-DS-7B** consistently surpasses its base model, DeepSeek-R1-Distill-Qwen-7B, with significant gains:
-        *   **+0.9%** on MATH-500 (**93.7%**)
-        *   **+3.2%** on AIME2024 (**58.7%**)
-        *   **+9.2%** on AIME2025 (**49.2%**)
-    *   **PromptCoT-DS-7B** (7B parameters) achieves results comparable to larger 32B models like S1-32B and LIMO-32B.
-    *   **PromptCoT-QwQ-32B** sets a new standard, outperforming other 32B models by a significant margin:
-        *   MATH-500: **96.7% ± 0.5%**
-        *   AIME2024: **83.8% ± 2.8%**
-        *   AIME2025: **75.4% ± 4.7%**
-    *   **PromptCoT-DS-1.5B** demonstrates competitive performance against RL-based models purely through distillation.
-*   **⚡ Efficiency Without Compromise**: **PromptCoT-DS-1.5B** achieves **40+% AIME scores** using **over 15× fewer A100 GPU hours** compared to models like DeepScaleR-1.5B-Preview.
+<p align="center">
+  <img src="assets/367227C9-DBB4-410E-AC58-EFA32FBE87D8.png" width="95%" alt="PromptCoT 2.0 Self-Play (30B-A3B) vs baselines"/>
+</p>
+<p align="center">
+  <em>
+  PromptCoT 2.0 demonstrates that large-scale <b>self-play with verifiable signals</b> is effective for advancing LLM reasoning.  
+  At 30B scale, self-play achieves performance competitive with closed-source leaders (Gemini 2.5 Pro, OpenAI o3) and surpasses strong open-source baselines.
+  </em>
+</p>
 
-### **2. PromptCoT-Mamba: Attention-Free Reasoning**
+**SFT @ Qwen2.5-7B-Instruct:**  
 
-*   🚀 **First Attention-Free SOTA**: PromptCoT-Mamba-7B is the first attention-free model (Mamba-2 architecture) to outperform strong Transformer baselines in math and code reasoning.
-*   🧠 **Trained with PromptCoT Pipeline**: Utilizes a structured, two-stage curriculum with data generated by PromptCoT.
-*   💪 **Strong General Performance**: PromptCoT-Mamba-7B consistently outperforms 7B-scale Transformer and hybrid Mamba-Transformer baselines.
-    *   MATH-500: **84.6%**
-    *   AIME 2024: **35.2%**
-    *   AIME 2025: **24.6%**
-    *   Livecodebench: **29.9%**
-*   🎯 **Math Specialization**: The math-specialized variant, **PromptCoT-Mamba-Math-7B**, further boosts math performance:
-    *   MATH-500: **88.0%**
-    *   AIME 2024: **42.9%** (+7.7% over generalist)
-    *   AIME 2025: **30.8%** (+6.2% over generalist)
-*   ⚡ **Inference Efficiency**: Offers substantial speedups (e.g., **3.66× faster** on 24GB GPU for long sequences) and constant-memory inference, ideal for cost-sensitive or long-context workloads.
+<p align="center">
+  <img src="assets/2668.jpg" width="95%" alt="PromptCoT 2.0 SFT (7B) vs OpenCodeReasoning vs OpenMathReasoning"/>
+</p>
+<p align="center">
+  <em>
+  PromptCoT 2.0 (7B, SFT) is the <b>first model trained entirely on synthetic prompts</b> with trajectories distilled from GPT-OSS-120B.  
+  Unlike OpenCodeReasoning and OpenMathReasoning — both built on <b>human-written prompts</b> — PromptCoT 2.0 achieves stronger performance, highlighting the potential of <b>fully synthetic prompt synthesis</b> as a foundation for reasoning models.
+  </em>
+</p>
 
 ---
 
-## **Performance Details**
+## 🔮 Releases
 
-### **PromptCoT Series Performance**
+[2025/09/24] We release [PromptCoT 2.0](https://arxiv.org/abs/2509.19894):  
+the first framework to scale prompt synthesis across both math and programming, enabling 30B self-play competitive with Gemini 2.5 Pro / OpenAI o3, and 7B SFT (100% synthetic prompts) surpassing human-written baselines.  
 
-| **Model**                                    | **GSM8K**        | **MATH-500**        | **AIME2024**        | **AIME2025**        |
-|----------------------------------------------|------------------|---------------------|---------------------|---------------------|
-| **🔹 1.5B Models**                           |                  |                     |                     |                     |
-| DeepSeek-R1-Distill-Qwen-1.5B            | -                | 83.9%               | 28.9%               | 28.1%               |
-| STILL-3-1.5B-preview                     | -                | 85.5%               | 39.3%               | -                   |
-| DeepScaleR-1.5B-Preview                  | -                | 🟢 **87.8%**         | 🟢 **43.1%**         | 🟢 **37.1%**         |
-| **PromptCoT-DS-1.5B** (**ours**)             | 🟢 **87.6% ± 0.5%**       | **85.3% ± 1.1%**     | **41.2% ± 6.9%**     | **36.7% ± 6.2%**     |
-| **🔹 7B Models**                             |                  |                     |                     |                     |
-| DeepSeek-R1-Distill-Qwen-7B              | -                | 92.8%               | 55.5%               | 40.0%               |
-| Qwen2.5-7B-SimpleRL                      | -                | 82.4%               | 26.7%               | -                   |
-| OpenThinker-7B                           | -                | 89.6%               | 30.0%               | 33.3%               |
-| OpenR1-Qwen-7B                           | -                | 90.6%               | 36.7%               | 40.0%               |
-| **PromptCoT-DS-7B** (**ours**)               | 🔥 **92.8% ± 0.5%** | 🔥 **93.7% ± 0.7%**  | 🔥 **58.7% ± 3.1%**  | 🔥 **49.2% ± 7.9%**  |
-| **🔹 32B Models**                            |                  |                     |                     |                     |
-| DeepSeek-R1-Distill-Qwen-32B             | -                | 94.3%               | 72.6%               | -                   |
-| S1-32B                                   | -                | 93.0%               | 56.7%               | 26.6%               |
-| LIMO-32B                                 | -                | 94.8%               | 57.1%               | 46.6%               |
-| QwQ-32B                                  | -                | -                   | 82.1%               | 70.8%               |
-| **PromptCoT-QwQ-32B** (**ours**)             | 🔥🔥 **96.4% ± 0.2%** | 🔥🔥 **96.7% ± 0.5%**   | 🔥🔥 **83.8% ± 2.8%** | 🔥🔥 **75.4% ± 4.7%** |
+**📂 Resources**  
+- **SFT Data (4.8M fully synthetic prompts + trajectories)**: [PromptCoT-2.0-SFT-4.8M](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SFT-4.8M)  
+- **SFT Model (7B)**: [PromptCoT-2.0-SFT-7B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SFT-7B)  
+- **Self-Play Data**: [PromptCoT-2.0-SelfPlay-30B-11K](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SelfPlay-30B-11K) and [PromptCoT-2.0-SelfPlay-4B-48K](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-SelfPlay-4B-48K)  
+- **Self-Play Models**: [PromptCoT-2.0-SelfPlay-30B-A3B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SelfPlay-30B-A3B) and [PromptCoT-2.0-SelfPlay-4B](https://huggingface.co/xl-zhao/PromptCoT-2.0-SelfPlay-4B)  
+- **Problem Generation Model**: [PromptCoT-2.0-Prompt-Generation-Model](https://huggingface.co/xl-zhao/PromptCoT-2.0-Prompt-Generation-Model)  
 
-### **PromptCoT-Mamba Performance**
 
-**General Performance:**
+[2025/05/30] We release [PromptCoT-Mamba](https://arxiv.org/abs/2505.22425) ([PromptCoT-Mamba-7B](https://huggingface.co/xl-zhao/PromptCoT-Mamba-7B)):  
+the first attention-free reasoning model, combining PromptCoT with Mamba-2 to achieve strong math & code performance with constant-memory inference.  
 
-| Model                  | MATH-500 | AIME 24  | AIME 25  | OlympiadBench | HumanEval | HumanEval+ | Livecodebench |
-| ---------------------- | -------- | -------- | -------- | ------------- | --------- | ---------- | ------------- |
-| **PromptCoT-Mamba-7B** | **84.6**     | 🔥🔥**35.2** | 🔥🔥**24.6** | **50.7**          | **81.7**      | **75.0**       | 🔥🔥**29.9**      |
-| Gemma3-27B             | **89.0** | 32.6     | 24.0     | **54.2**      | **86.0**  | **78.0**   | 26.9          |
-| Gemma3-12B             | 83.8     | 22.9     | 19.2     | 49.9          | 81.1      | 73.2       | 22.2          |
-| Sky-T1-7B              | 85.0     | 19.2     | 19.2     | 49.2          | 41.5      | 37.2       | 18.3          |
-| S1.1-7B                | 82.0     | 19.2     | 17.5     | 43.1          | 64.0      | 56.7       | 13.3          |
-| Bespoke-Stratos-7B     | 81.2     | 18.3     | 16.3     | 45.0          | 73.2      | 68.3       | 8.6           |
-| Nemotron-H-8B          | 77.6     | --       | --       | --            | 79.3      | 74.4       | --            |
-| M1-3B                  | 81.7     | 23.0     | 22.0     | 43.6          | --        | --         | --            |
 
-**Math Specialization vs. Generalist:**
+[2025/04/11] We release [PromptCoT-QwQ-32B](https://huggingface.co/xl-zhao/PromptCoT-QwQ-32B) and [PromptCoT-QwQ-Dataset](https://huggingface.co/datasets/xl-zhao/PromptCoT-QwQ-Dataset):  
+self-play of QwQ-32B using PromptCoT synthetic problems, with dedicated datasets for reproducible training.  
 
-| Model                       | MATH-500 | AIME 24  | AIME 25  | OlympiadBench | HumanEval | HumanEval+ | Livecodebench |
-| --------------------------- | -------- | -------- | -------- | ------------- | --------- | ---------- | ------------- |
-| **PromptCoT-Mamba-Math-7B** | 🔥🔥**88.0** | 🔥🔥**42.9** | 🔥🔥**30.8** | 🔥🔥**52.1**      | 71.3      | 66.5       | 20.3          |
-| PromptCoT-Mamba-7B          | 84.6     | 35.2     | 24.6     | 50.7          | **81.7**  | **75.0**   | **29.9**      |
+
+[2025/03/07] We release [PromptCoT 1.0](http://arxiv.org/abs/2503.02324) (🤗 [HF Collection](https://huggingface.co/collections/xl-zhao/promptcot-10-68d27ce16efc9cbad4b5c878)):  
+the first rationale-driven synthesis pipeline for Olympiad-level math problems, releasing problem generation models, distilled models, and datasets.  
+
 
 ---
 
+## Quick Start
 
-## **Citation**
+```bash
+git clone https://github.com/inclusionAI/PromptCoT
+cd PromptCoT
+pip install -r requirements.txt
+````
 
-If you find **PromptCoT** or **PromptCoT-Mamba** useful in your research, please consider citing the respective papers:
+---
 
-**For PromptCoT:**
-```bibtex
-@article{zhao2025promptcot,
-  author    = {Zhao, Xueliang and Wu, Wei and Guan, Jian and Kong, Lingpeng},
-  title     = {PromptCoT: Synthesizing Olympiad-Level Problems for Mathematical Reasoning in Large Language Models},
+## Self-Play Pipeline (Code Example)
+
+We illustrate the self-play workflow in the **code domain**, where unit tests provide verifiable reward signals.
+
+---
+
+**Step 1 — Verifiable Reward Generation (test case construction)**  
+The input `.jsonl` file must include a `"problem"` field for each instance, specifying the coding task to be solved.  
+In each run, a new test case is generated and appended to the `"completions"` field, progressively enriching the specification.  
+
+````bash
+# Generate 4 rounds of test cases with different seeds
+for seed in {0..3}; do
+  python test_cases_generation.py \
+    --seed $seed \
+    --data_path code/prompts_test_cases_${seed}.jsonl \
+    --output_path code/prompts_test_cases_$((seed+1)).jsonl \
+    --model_path Qwen/Qwen3-32B \
+    --n_gpus 4 \
+    --temperature 0.6 \
+    --max_len 16384 \
+    --use_chat_template True
+done
+````
+
+Post-process the generated test cases into a structured format:
+
+````bash
+python test_cases_postprocess.py \
+  --input_file code/prompts_test_cases_4.jsonl \
+  --output_path code/prompts_test_cases_processed.jsonl
+````
+
+---
+
+**Step 2 — Self-Play Trajectory Collection**
+Using the processed test cases, generate diverse trajectories by sampling across multiple seeds:
+
+````bash
+for seed in {0..7}; do
+  python infer_self_play.py \
+    --data_path code/selfplay_${seed}.jsonl \
+    --output_path code/selfplay_$((seed+1)).jsonl \
+    --model_path Qwen/Qwen3-30B-A3B-Thinking-2507 \
+    --trust_remote_code True \
+    --n_gpus 8 \
+    --num_splits 4 \
+    --num_completions 8 \
+    --seed $seed \
+    --temperature 1.2 \
+    --max_len 81920 \
+    --use_chat_template True
+done
+````
+
+---
+
+**Step 3 — Reward Assignment**
+Evaluate each trajectory against the constructed test cases and assign reward signals automatically:
+
+````bash
+python self_play_eval.py \
+  --data_path code/selfplay_8.jsonl \
+  --output_path code/selfplay_verified.jsonl \
+  --eval_type code \
+  --num_workers 16
+````
+
+---
+
+**Step 4 — Pair Construction**
+Aggregate verified trajectories into **chosen vs. rejected** pairs for offline self-play training:
+
+````bash
+python prepare_self_play_data.py \
+  --data_path code/selfplay_verified.jsonl \
+  --output_path code/selfplay_training.jsonl
+````
+
+---
+
+## SFT Pipeline (Code Example)
+
+We illustrate the SFT workflow in the **code domain**, using teacher trajectories from GPT-OSS-120B.
+
+---
+
+**Step 1 — Teacher Trajectory Collection**
+Sample teacher responses for each prompt, with one trajectory per problem:
+
+````bash
+python infer_self_play.py \
+  --data_path code/prompts_test_cases_processed.jsonl \
+  --output_path code/prompts_trajectories.jsonl \
+  --model_path openai/gpt-oss-120b \
+  --trust_remote_code True \
+  --n_gpus 8 \
+  --num_splits 4 \
+  --num_completions 1 \
+  --seed 0 \
+  --temperature 1.0 \
+  --max_len 16384 \
+  --use_chat_template True
+````
+
+---
+
+**Step 2 — Data Post-Processing**
+Filter incomplete or invalid trajectories, and format them into clean prompt–completion pairs for supervised fine-tuning:
+
+````bash
+python prepare_sft_data_code.py \
+  --data_path code/prompts_trajectories.jsonl \
+  --output_path code/sft_training.jsonl \
+  --tokenizer_path Qwen/Qwen2.5-7B-Instruct
+````
+
+
+
+
+## Benchmark Results Reproduction
+
+We provide scripts to reproduce results for both **self-play** and **SFT** models.  
+For math evaluations, we recommend setting `VLLM_USE_V1=0` to ensure reproducibility.
+
+---
+
+**Self-Play Models**
+
+*30B-A3B (Math)*  
+````bash
+for dataset in aime24 aime25 hmmt25; do
+  python infer_split_merge.py \
+    --data_path data/promptcot2_${dataset}_test.jsonl \
+    --output_path qwen_evals/30b_a3b/${dataset}.jsonl \
+    --model_path /path/to/PromptCoT-2.0-SelfPlay-30B-A3B \
+    --n_splits 4 \
+    --expected_runs 16 \
+    --temperature 0.6 \
+    --top_p 0.95 \
+    --max_len 81920 \
+    --factor 1.75 \
+    --original_max_position_embeddings 262144
+done
+````
+
+*30B-A3B (Code)*
+
+````bash
+# Codeforces
+python infer_split_merge.py \
+  --data_path data/promptcot2_codeforces_test.jsonl \
+  --output_path qwen_evals/30b_a3b/codeforces.jsonl \
+  --model_path /path/to/PromptCoT-2.0-SelfPlay-30B-A3B \
+  --n_splits 1 \
+  --expected_runs 8 \
+  --temperature 0.6 \
+  --top_p 0.95 \
+  --max_len 81920 \
+  --factor 1.75 \
+  --original_max_position_embeddings 262144
+
+# LiveCodeBench v5 / v6
+for dataset in lcb_v5 lcb_v6; do
+  python infer_split_merge.py \
+    --data_path data/promptcot2_${dataset}_test.jsonl \
+    --output_path qwen_evals/30b_a3b/${dataset}.jsonl \
+    --model_path /path/to/PromptCoT-2.0-SelfPlay-30B-A3B \
+    --n_splits 1 \
+    --expected_runs 1 \
+    --temperature 0.6 \
+    --top_p 0.95 \
+    --max_len 81920 \
+    --factor 1.75 \
+    --original_max_position_embeddings 262144
+done
+````
+
+*4B (Math)*
+
+````bash
+for dataset in aime24 aime25 hmmt25; do
+  python infer_split_merge.py \
+    --data_path data/promptcot2_${dataset}_test.jsonl \
+    --output_path qwen_evals/4b/${dataset}.jsonl \
+    --model_path /path/to/PromptCoT-2.0-SelfPlay-4B \
+    --n_splits 8 \
+    --expected_runs 16 \
+    --temperature 0.6 \
+    --top_p 0.95 \
+    --max_len 81920 \
+    --factor 1.75 \
+    --original_max_position_embeddings 262144
+done
+````
+
+*4B (Code)*
+
+````bash
+# Codeforces
+python infer_split_merge.py \
+  --data_path data/promptcot2_codeforces_test.jsonl \
+  --output_path qwen_evals/4b/codeforces.jsonl \
+  --model_path /path/to/PromptCoT-2.0-SelfPlay-4B \
+  --n_splits 4 \
+  --expected_runs 8 \
+  --temperature 0.6 \
+  --top_p 0.95 \
+  --max_len 81920 \
+  --factor 1.75 \
+  --original_max_position_embeddings 262144
+
+# LiveCodeBench v5 / v6
+for dataset in lcb_v5 lcb_v6; do
+  python infer_split_merge.py \
+    --data_path data/promptcot2_${dataset}_test.jsonl \
+    --output_path qwen_evals/4b/${dataset}.jsonl \
+    --model_path /path/to/PromptCoT-2.0-SelfPlay-4B \
+    --n_splits 8 \
+    --expected_runs 1 \
+    --temperature 0.6 \
+    --top_p 0.95 \
+    --max_len 81920 \
+    --factor 1.75 \
+    --original_max_position_embeddings 262144
+done
+````
+
+---
+
+**SFT Models (7B)**
+
+*Math*
+
+````bash
+for dataset in aime24 aime25 hmmt25; do
+  python infer_split_merge.py \
+    --data_path data/promptcot2_${dataset}_test.jsonl \
+    --output_path qwen_evals/sft/${dataset}.jsonl \
+    --model_path /path/to/PromptCoT-2.0-SFT-7B \
+    --n_splits 8 \
+    --expected_runs 16 \
+    --temperature 0.6 \
+    --top_p 0.95 \
+    --max_len 81920
+done
+````
+
+*Code*
+
+````bash
+# Codeforces
+python infer_split_merge.py \
+  --data_path data/promptcot2_codeforces_test.jsonl \
+  --output_path qwen_evals/sft/codeforces.jsonl \
+  --model_path /path/to/PromptCoT-2.0-SFT-7B \
+  --n_splits 8 \
+  --expected_runs 8 \
+  --temperature 0.6 \
+  --top_p 0.95 \
+  --max_len 81920
+
+# LiveCodeBench v5 / v6
+for dataset in lcb_v5 lcb_v6; do
+  python infer_split_merge.py \
+    --data_path data/promptcot2_${dataset}_test.jsonl \
+    --output_path qwen_evals/sft/${dataset}.jsonl \
+    --model_path /path/to/PromptCoT-2.0-SFT-7B \
+    --n_splits 8 \
+    --expected_runs 1 \
+    --temperature 0.6 \
+    --top_p 0.95 \
+    --max_len 81920
+done
+````
+
+## 📜 Citation
+
+If you find the **PromptCoT** series useful, please consider citing our work:
+
+````bibtex
+@article{zhao2025promptcot2,
+  title     = {PromptCoT 2.0: Scaling Prompt Synthesis for Large Language Model Reasoning},
+  author    = {Zhao, Xueliang and Wu, Wei and Guan, Jian and Gong, Zhuocheng and Kong, Lingpeng},
+  journal   = {arXiv preprint arXiv:2509.19894},
   year      = {2025},
-  journal   = {arXiv preprint arXiv:2503.02324},
-  url       = {http://arxiv.org/abs/2503.02324}
+  url       = {https://arxiv.org/abs/2509.19894}
 }
-```
 
-**For PromptCoT-Mamba:**
-```bibtex
 @article{zhao2025scaling,
-  author    = {Xueliang Zhao and Wei Wu and Lingpeng Kong},
   title     = {Scaling Reasoning without Attention},
+  author    = {Zhao, Xueliang and Wu, Wei and Kong, Lingpeng},
   journal   = {arXiv preprint arXiv:2505.22425},
   year      = {2025},
   url       = {https://arxiv.org/abs/2505.22425}
 }
-```
+
+@article{zhao2025promptcot,
+  title     = {PromptCoT: Synthesizing Olympiad-Level Problems for Mathematical Reasoning in Large Language Models},
+  author    = {Zhao, Xueliang and Wu, Wei and Guan, Jian and Kong, Lingpeng},
+  journal   = {arXiv preprint arXiv:2503.02324},
+  year      = {2025},
+  url       = {https://arxiv.org/abs/2503.02324}
+}
+````
+
