@@ -60,6 +60,9 @@ Unleash the PromptCoT tide of reasoning!
 
 ## 🔮 Releases
 
+[2025/10/26] We release the **problem generation recipe** (`problem_generation.sh`), enabling full reproduction of PromptCoT 2.0's scalable synthesis pipeline from concept files.
+
+
 [2025/09/24] We release [PromptCoT 2.0](https://arxiv.org/abs/2509.19894):  
 the first framework to scale prompt synthesis across both math and programming, enabling 30B self-play competitive with Gemini 2.5 Pro / OpenAI o3, and 7B SFT (100% synthetic prompts) surpassing human-written baselines.  
 
@@ -91,6 +94,22 @@ the first rationale-driven synthesis pipeline for Olympiad-level math problems, 
 git clone https://github.com/inclusionAI/PromptCoT
 cd PromptCoT
 pip install -r requirements.txt
+````
+
+---
+
+## 🧩 Problem Generation (Concept → Rationale → Problem)
+
+We provide a script to synthesize problems from concept files using the PromptCoT 2.0 pipeline.
+
+- **Concept files**: available at **[xl-zhao/PromptCoT-2.0-Concepts](https://huggingface.co/datasets/xl-zhao/PromptCoT-2.0-Concepts)** (e.g., `PromptCoT-2.0-Concepts/code.jsonl`).
+- **Model**: set `--model_path` in the script to your **PromptCoT-2.0-Prompt-Generation-Model** (see Releases for links).
+
+**Make the script executable and run:**
+
+````bash
+chmod +x problem_generation.sh
+./problem_generation.sh
 ````
 
 ---

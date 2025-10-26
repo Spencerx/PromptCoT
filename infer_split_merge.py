@@ -207,7 +207,6 @@ def main():
     parser.add_argument("--factor", type=float, default=1.0)
     parser.add_argument("--original_max_position_embeddings", type=int, default=131072)
 
-    parser.add_argument("--use_ring", type=str2bool, default=False)
     parser.add_argument("--expected_runs", type=int, default=1)
     parser.add_argument("--reasoning_effort", type=str, default=None)
     parser.add_argument("--debug", type=str2bool, default=False)
@@ -236,8 +235,8 @@ def main():
             for _ in range(args.expected_runs):
                 item = json.loads(line)
                 items.append(item)
-                if args.debug and len(items) >= 100:
-                    break
+            if args.debug and len(items) >= 100:
+                break
 
     print(f"Loaded {len(items)} items")
 
