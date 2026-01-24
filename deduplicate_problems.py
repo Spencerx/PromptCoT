@@ -6,6 +6,15 @@ from tqdm import tqdm
 from utils import DuplicateChecker
 
 
+"""
+Deduplicate problems across multiple JSONL shards.
+
+Inputs must contain a `completion` field, and the completion must include:
+  <!-- BEGIN RATIONALE --> ... <!-- END RATIONALE -->
+  <!-- BEGIN PROBLEM -->   ... <!-- END PROBLEM -->
+"""
+
+
 def format_code_prompt(problem):
     """Format a problem with the code prompt template."""
     if "starter code" in problem:
@@ -118,6 +127,11 @@ Examples:
     --task-type math \\
     --threshold 0.3 \\
     --min-word-length 5
+
+Notes:
+  - `--pattern` must include a `{}` placeholder which will be replaced with an index.
+  - `--indices` ranges are END-EXCLUSIVE (e.g., 0-64 expands to 0..63).
+  - Smaller `--threshold` values make fuzzy duplicate filtering more aggressive.
         """
     )
 
@@ -125,28 +139,32 @@ Examples:
         "--pattern",
         type=str,
         required=True,
-        help="File pattern with {} placeholder for index (e.g., 'data/trace{}.jsonl')"
+        help="File pattern with a `{}` placeholder for the shard index (e.g., 'data/trace{}.jsonl')."
     )
 
     parser.add_argument(
         "--indices",
         type=str,
         required=True,
-        help="Range of indices to process (e.g., '0-60' or '0,2,4-10,15')"
+        help=(
+            "Indices to process, as comma-separated values and/or ranges. "
+            "Ranges are end-exclusive (e.g., '0-60' means 0..59). "
+            "Example: '0,2,4-10,15'."
+        ),
     )
 
     parser.add_argument(
         "--exclude",
         type=str,
         default="",
-        help="Comma-separated indices to exclude (e.g., '0,2,5')"
+        help="Comma-separated indices to exclude (e.g., '0,2,5').",
     )
 
     parser.add_argument(
         "--output",
         type=str,
         required=True,
-        help="Output file path (e.g., 'output/deduplicated.jsonl')"
+        help="Output JSONL path (e.g., 'output/deduplicated.jsonl').",
     )
 
     parser.add_argument(
@@ -154,21 +172,23 @@ Examples:
         type=str,
         choices=["code", "math"],
         default="code",
-        help="Type of task: 'code' or 'math' (default: code)"
+        help="Prompt formatting for output items: 'code' or 'math' (default: code).",
     )
 
     parser.add_argument(
         "--threshold",
         type=float,
         default=0.2,
-        help="Duplicate detection threshold (default: 0.2)"
+        help=(
+            "Fuzzy duplicate threshold (lower is more aggressive; default: 0.2)."
+        ),
     )
 
     parser.add_argument(
         "--min-word-length",
         type=int,
         default=4,
-        help="Minimum word length for duplicate detection (default: 4)"
+        help="Minimum word length considered for fuzzy duplicate detection (default: 4).",
     )
 
     args = parser.parse_args()

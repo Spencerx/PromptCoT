@@ -8,6 +8,14 @@ from typing import List, Dict, Any
 import time
 
 
+"""
+Run vLLM inference over a JSONL dataset.
+
+Input JSONL: each line is a JSON object containing `prompt`.
+Output JSONL: each line is the original object plus `completion`.
+Uses a split/merge multiprocessing strategy; each worker binds to its assigned GPUs via CUDA_VISIBLE_DEVICES.
+"""
+
 
 def process_split_worker(split_id: int, data_split: List[Dict], args_dict: Dict, gpu_ids: List[int]) -> List[Dict]:
     """Worker function that sets GPU environment before importing CUDA libraries"""
@@ -181,35 +189,160 @@ def main():
     import torch
     from str2bool import str2bool
 
-    parser = argparse.ArgumentParser(description="Evaluate large language models using split-and-merge.")
-    parser.add_argument("--data_path", type=str, required=True)
-    parser.add_argument("--output_path", type=str, required=True)
-    parser.add_argument("--model_path", type=str, required=True)
-    parser.add_argument("--tokenizer_path", type=str, default=None)
-    parser.add_argument("--dtype", type=str, default="bfloat16")
-    parser.add_argument("--n_gpus", type=int, default=8)
-    parser.add_argument("--n_splits", type=int, default=4)
-    parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--top_p", type=float, default=1.0)
-    parser.add_argument("--top_k", type=int, default=-1)
-    parser.add_argument("--presence_penalty", type=float, default=0.0)
-    parser.add_argument("--frequency_penalty", type=float, default=0.0)
-    parser.add_argument("--repetition_penalty", type=float, default=1.0)
-    parser.add_argument("--min_len", type=int, default=0)
-    parser.add_argument("--max_len", type=int, default=2048)
-    parser.add_argument("--use_chat_template", type=str2bool, default=False)
-    parser.add_argument("--seed", type=int, default=-1)
-    parser.add_argument("--use_mamba2", type=str2bool, default=False)
-    parser.add_argument("--gpu_memory_utilization", type=float, default=0.9)
-    parser.add_argument("--max_num_seqs", type=int, default=256)
+    parser = argparse.ArgumentParser(description="Generate completions using split-and-merge with vLLM.")
+    parser.add_argument(
+        "--data_path",
+        type=str,
+        required=True,
+        help="Path to the dataset file (JSONL with a `prompt` field).",
+    )
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        required=True,
+        help="Output JSONL path.",
+    )
+    parser.add_argument(
+        "--model_path",
+        type=str,
+        required=True,
+        help="Path to the pretrained model.",
+    )
+    parser.add_argument(
+        "--tokenizer_path",
+        type=str,
+        default=None,
+        help="Tokenizer path (defaults to --model_path).",
+    )
+    parser.add_argument(
+        "--dtype",
+        type=str,
+        default="bfloat16",
+        help="Data type to use for the model.",
+    )
+    parser.add_argument(
+        "--n_gpus",
+        type=int,
+        default=8,
+        help="Total number of GPUs to use.",
+    )
+    parser.add_argument(
+        "--n_splits",
+        type=int,
+        default=4,
+        help="Number of data splits/parallel processes.",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.0,
+        help="Sampling temperature for generation.",
+    )
+    parser.add_argument(
+        "--top_p",
+        type=float,
+        default=1.0,
+        help="Top-p sampling for generation.",
+    )
+    parser.add_argument(
+        "--top_k",
+        type=int,
+        default=-1,
+        help="Top-k sampling for generation (-1 disables).",
+    )
+    parser.add_argument(
+        "--presence_penalty",
+        type=float,
+        default=0.0,
+        help="Presence penalty for sampling.",
+    )
+    parser.add_argument(
+        "--frequency_penalty",
+        type=float,
+        default=0.0,
+        help="Frequency penalty for sampling.",
+    )
+    parser.add_argument(
+        "--repetition_penalty",
+        type=float,
+        default=1.0,
+        help="Repetition penalty for sampling.",
+    )
+    parser.add_argument(
+        "--min_len",
+        type=int,
+        default=0,
+        help="Minimum number of tokens to generate.",
+    )
+    parser.add_argument(
+        "--max_len",
+        type=int,
+        default=2048,
+        help="Maximum number of tokens to generate.",
+    )
+    parser.add_argument(
+        "--use_chat_template",
+        type=str2bool,
+        default=False,
+        help="Whether to apply chat template to prompts.",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=-1,
+        help="Seed for sampling (-1 for non-deterministic). When --expected_runs > 1, seed must be -1 (non-deterministic).",
+    )
+    parser.add_argument(
+        "--use_mamba2",
+        type=str2bool,
+        default=False,
+        help="Whether to use the Mamba2 variant code path.",
+    )
+    parser.add_argument(
+        "--gpu_memory_utilization",
+        type=float,
+        default=0.9,
+        help="GPU memory utilization for vLLM.",
+    )
+    parser.add_argument(
+        "--max_num_seqs",
+        type=int,
+        default=256,
+        help="vLLM max_num_seqs (used when --use_mamba2 is true).",
+    )
 
     # context extension
-    parser.add_argument("--factor", type=float, default=1.0)
-    parser.add_argument("--original_max_position_embeddings", type=int, default=131072)
+    parser.add_argument(
+        "--factor",
+        type=float,
+        default=1.0,
+        help="RoPE scaling factor (YARN).",
+    )
+    parser.add_argument(
+        "--original_max_position_embeddings",
+        type=int,
+        default=131072,
+        help="Original max position embeddings (used when --factor > 1.0).",
+    )
 
-    parser.add_argument("--expected_runs", type=int, default=1)
-    parser.add_argument("--reasoning_effort", type=str, default=None)
-    parser.add_argument("--debug", type=str2bool, default=False)
+    parser.add_argument(
+        "--expected_runs",
+        type=int,
+        default=1,
+        help="Number of completions to generate per item (expanded by repetition).",
+    )
+    parser.add_argument(
+        "--reasoning_effort",
+        type=str,
+        default=None,
+        help="Optional arg passed to tokenizer chat template (requires --use_chat_template).",
+    )
+    parser.add_argument(
+        "--debug",
+        type=str2bool,
+        default=False,
+        help="If true, only process a small subset for quick debugging.",
+    )
 
     args = parser.parse_args()
 
