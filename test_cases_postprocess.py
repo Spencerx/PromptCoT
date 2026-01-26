@@ -4,6 +4,8 @@ import re
 import os
 from tqdm import tqdm
 
+from env_config import load_env, env_str
+
 
 def extract_json_from_output(output_text):
     """
@@ -73,9 +75,14 @@ def get_after_think(text):
 
 
 def main():
+    load_env()
+
     parser = argparse.ArgumentParser(description="Process test cases and generate prompts for code evaluation.")
-    parser.add_argument("--input_file", type=str, required=True, help="Path to the input test case file.")
-    parser.add_argument("--output_file", type=str, required=True,  help="Path to the output file.")
+    # Namespaced env vars avoid collisions across scripts; unprefixed vars remain supported for compatibility.
+    input_file_default = env_str("TEST_CASES_POSTPROCESS_INPUT_FILE") or env_str("INPUT_FILE")
+    output_file_default = env_str("TEST_CASES_POSTPROCESS_OUTPUT_FILE") or env_str("OUTPUT_FILE")
+    parser.add_argument("--input_file", type=str, default=input_file_default, required=input_file_default is None, help="Path to the input test case file.")
+    parser.add_argument("--output_file", type=str, default=output_file_default, required=output_file_default is None,  help="Path to the output file.")
 
     args = parser.parse_args()
 

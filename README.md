@@ -98,6 +98,33 @@ pip install -r requirements.txt
 
 ---
 
+## Configuration
+
+Top-level scripts support loading default configuration values from a local `.env` file.
+
+1. Copy `.env.example` to `.env`
+2. Edit values (for example `MODEL_PATH`, `N_GPUS`, `DATA_PATH`, `OUTPUT_PATH`)
+3. Validate your setup:
+
+```bash
+python validate_config.py
+```
+
+Notes:
+- Precedence is `CLI args > .env > code defaults`.
+- `MODEL_PATH` / `TOKENIZER_PATH` can be a local path or a Hugging Face model id; the validator only checks filesystem paths.
+- Empty strings in `.env` are treated as "unset" (e.g. `DATA_PATH=` behaves like not set).
+- Prefer namespaced environment variables (e.g. `SPLIT_MERGE_OUTPUT_PATH`, `SELF_PLAY_OUTPUT_PATH`) to avoid collisions when you run multiple scripts from the same `.env`.
+- Some scripts historically used different env var names (e.g. `infer_split_merge.py` uses `N_SPLITS`, while `infer_self_play.py` uses `NUM_SPLITS`); `.env.example` documents the mapping and the code includes small fallbacks for these.
+
+To run the lightweight unit tests in this repo:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+---
+
 ## 🧩 Problem Generation (Concept → Rationale → Problem)
 
 We provide a script to synthesize problems from concept files using the PromptCoT 2.0 pipeline.
@@ -419,4 +446,3 @@ If you find the **PromptCoT** series useful, please consider citing our work:
   url       = {https://arxiv.org/abs/2503.02324}
 }
 ````
-

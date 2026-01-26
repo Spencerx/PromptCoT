@@ -6,6 +6,8 @@ from transformers import AutoTokenizer
 from str2bool import str2bool
 import os
 
+from env_config import load_env, env_bool, env_float, env_int, env_str
+
 def test_case_generation_prompt(prompt_text):
 
     refined_prompt = (
@@ -49,20 +51,26 @@ def test_case_generation_prompt(prompt_text):
     return refined_prompt
 
 def main():
+    load_env()
+
     parser = argparse.ArgumentParser(description="Evaluate large language models on critical datasets.")
-    parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset file.")
-    parser.add_argument("--output_path", type=str, required=True, help="Directory to store cached outputs.")
-    parser.add_argument("--model_path", type=str, required=True, help="Path to the pretrained model.")
-    parser.add_argument("--tokenizer_path", type=str, default=None, help="Path to the pretrained model.")
-    parser.add_argument("--dtype", type=str, default="bfloat16", help="Data type to use for the model (e.g., fp16, bf16, etc.).")
-    parser.add_argument("--n_gpus", type=int, default=8, help="Number of GPUs to use for tensor parallelism.")
-    parser.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature for generation.")
-    parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling for generation.")
-    parser.add_argument("--top_k", type=int, default=-1, help="Top-k sampling for generation.")  # todo: 40
-    parser.add_argument("--max_len", type=int, default=2048, help="Maximum number of tokens to generate.")
-    parser.add_argument("--use_chat_template", type=str2bool, default=False)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--enable_thinking", type=str2bool, default=True)
+    # Namespaced env vars avoid collisions across scripts; unprefixed vars remain supported for compatibility.
+    data_path_default = env_str("TEST_CASES_GEN_DATA_PATH") or env_str("DATA_PATH")
+    output_path_default = env_str("TEST_CASES_GEN_OUTPUT_PATH") or env_str("OUTPUT_PATH")
+    model_path_default = env_str("TEST_CASES_GEN_MODEL_PATH") or env_str("MODEL_PATH")
+    parser.add_argument("--data_path", type=str, default=data_path_default, required=data_path_default is None, help="Path to the dataset file.")
+    parser.add_argument("--output_path", type=str, default=output_path_default, required=output_path_default is None, help="Directory to store cached outputs.")
+    parser.add_argument("--model_path", type=str, default=model_path_default, required=model_path_default is None, help="Path to the pretrained model.")
+    parser.add_argument("--tokenizer_path", type=str, default=env_str("TEST_CASES_GEN_TOKENIZER_PATH") or env_str("TOKENIZER_PATH", default=None), help="Path to the pretrained model.")
+    parser.add_argument("--dtype", type=str, default=env_str("TEST_CASES_GEN_DTYPE") or env_str("DTYPE", default="bfloat16"), help="Data type to use for the model (e.g., fp16, bf16, etc.).")
+    parser.add_argument("--n_gpus", type=int, default=env_int("TEST_CASES_GEN_N_GPUS", default=None) or env_int("N_GPUS", default=8), help="Number of GPUs to use for tensor parallelism.")
+    parser.add_argument("--temperature", type=float, default=env_float("TEST_CASES_GEN_TEMPERATURE", default=None) or env_float("TEMPERATURE", default=0.0), help="Sampling temperature for generation.")
+    parser.add_argument("--top_p", type=float, default=env_float("TEST_CASES_GEN_TOP_P", default=None) or env_float("TOP_P", default=1.0), help="Top-p sampling for generation.")
+    parser.add_argument("--top_k", type=int, default=env_int("TEST_CASES_GEN_TOP_K", default=None) or env_int("TOP_K", default=-1), help="Top-k sampling for generation.")  # todo: 40
+    parser.add_argument("--max_len", type=int, default=env_int("TEST_CASES_GEN_MAX_LEN", default=None) or env_int("MAX_LEN", default=2048), help="Maximum number of tokens to generate.")
+    parser.add_argument("--use_chat_template", type=str2bool, default=env_bool("TEST_CASES_GEN_USE_CHAT_TEMPLATE", default=None) or env_bool("USE_CHAT_TEMPLATE", default=False))
+    parser.add_argument("--seed", type=int, default=env_int("TEST_CASES_GEN_SEED", default=None) or env_int("SEED", default=42))
+    parser.add_argument("--enable_thinking", type=str2bool, default=env_bool("TEST_CASES_GEN_ENABLE_THINKING", default=None) or env_bool("ENABLE_THINKING", default=True))
 
     args = parser.parse_args()
 

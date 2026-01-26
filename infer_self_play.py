@@ -7,6 +7,8 @@ import math
 from typing import List, Dict
 import time
 
+from env_config import load_env, env_bool, env_float, env_int, env_str
+
 
 def get_after_think(text):
     parts = text.split("</think>", 1)
@@ -196,24 +198,38 @@ def main():
     import torch
     from str2bool import str2bool
 
+    load_env()
+
     parser = argparse.ArgumentParser(
         description="Generate completions for large language models using split-and-merge.")
-    parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset file.")
-    parser.add_argument("--output_path", type=str, required=True, help="Directory to store cached outputs.")
-    parser.add_argument("--model_path", type=str, required=True, help="Path to the pretrained model.")
-    parser.add_argument("--dtype", type=str, default="bfloat16", help="Data type to use for the model.")
-    parser.add_argument("--n_gpus", type=int, default=8, help="Total number of GPUs to use.")
-    parser.add_argument("--num_splits", type=int, default=4, help="Number of data splits/parallel processes.")
-    parser.add_argument("--num_completions", type=int, default=1, help="Number of completions to generate per item.")
-    parser.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature for generation.")
-    parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling for generation.")
-    parser.add_argument("--max_len", type=int, default=2048, help="Maximum number of tokens to generate.")
-    parser.add_argument("--use_chat_template", type=str2bool, default=False)
-    parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--use_mamba2", type=str2bool, default=False)
-    parser.add_argument("--trust_remote_code", type=str2bool, default=False)
-    parser.add_argument("--reasoning_effort", type=str, default=None)
-    parser.add_argument("--debug", type=str2bool, default=False)
+    # Namespaced env vars avoid collisions across scripts; unprefixed vars remain supported for compatibility.
+    data_path_default = env_str("SELF_PLAY_DATA_PATH") or env_str("DATA_PATH")
+    output_path_default = env_str("SELF_PLAY_OUTPUT_PATH") or env_str("OUTPUT_PATH")
+    model_path_default = env_str("SELF_PLAY_MODEL_PATH") or env_str("MODEL_PATH")
+    parser.add_argument("--data_path", type=str, default=data_path_default, required=data_path_default is None, help="Path to the dataset file.")
+    parser.add_argument("--output_path", type=str, default=output_path_default, required=output_path_default is None, help="Directory to store cached outputs.")
+    parser.add_argument("--model_path", type=str, default=model_path_default, required=model_path_default is None, help="Path to the pretrained model.")
+    parser.add_argument("--dtype", type=str, default=env_str("SELF_PLAY_DTYPE") or env_str("DTYPE", default="bfloat16"), help="Data type to use for the model.")
+    n_gpus_default = env_int("SELF_PLAY_N_GPUS", default=None)
+    if n_gpus_default is None:
+        n_gpus_default = env_int("N_GPUS", default=8)
+    parser.add_argument("--n_gpus", type=int, default=n_gpus_default, help="Total number of GPUs to use.")
+    num_splits_default = env_int("SELF_PLAY_NUM_SPLITS", default=None)
+    if num_splits_default is None:
+        num_splits_default = env_int("NUM_SPLITS", default=None)
+    if num_splits_default is None:
+        num_splits_default = env_int("N_SPLITS", default=4)
+    parser.add_argument("--num_splits", type=int, default=num_splits_default, help="Number of data splits/parallel processes.")
+    parser.add_argument("--num_completions", type=int, default=env_int("SELF_PLAY_NUM_COMPLETIONS", default=None) or env_int("NUM_COMPLETIONS", default=1), help="Number of completions to generate per item.")
+    parser.add_argument("--temperature", type=float, default=env_float("SELF_PLAY_TEMPERATURE", default=None) or env_float("TEMPERATURE", default=0.0), help="Sampling temperature for generation.")
+    parser.add_argument("--top_p", type=float, default=env_float("SELF_PLAY_TOP_P", default=None) or env_float("TOP_P", default=1.0), help="Top-p sampling for generation.")
+    parser.add_argument("--max_len", type=int, default=env_int("SELF_PLAY_MAX_LEN", default=None) or env_int("MAX_LEN", default=2048), help="Maximum number of tokens to generate.")
+    parser.add_argument("--use_chat_template", type=str2bool, default=env_bool("SELF_PLAY_USE_CHAT_TEMPLATE", default=None) or env_bool("USE_CHAT_TEMPLATE", default=False))
+    parser.add_argument("--seed", type=int, default=env_int("SELF_PLAY_SEED", default=None) or env_int("SEED", default=0))
+    parser.add_argument("--use_mamba2", type=str2bool, default=env_bool("SELF_PLAY_USE_MAMBA2", default=None) or env_bool("USE_MAMBA2", default=False))
+    parser.add_argument("--trust_remote_code", type=str2bool, default=env_bool("SELF_PLAY_TRUST_REMOTE_CODE", default=None) or env_bool("TRUST_REMOTE_CODE", default=False))
+    parser.add_argument("--reasoning_effort", type=str, default=env_str("SELF_PLAY_REASONING_EFFORT") or env_str("REASONING_EFFORT", default=None))
+    parser.add_argument("--debug", type=str2bool, default=env_bool("SELF_PLAY_DEBUG", default=None) or env_bool("DEBUG", default=False))
 
     args = parser.parse_args()
 

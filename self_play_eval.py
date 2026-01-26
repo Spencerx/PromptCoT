@@ -10,6 +10,8 @@ import numpy as np
 import threading
 from concurrent.futures import TimeoutError as FuturesTimeoutError
 
+from env_config import load_env, env_bool, env_int, env_str
+
 
 def extract_code(text: str) -> str:
     outputlines = text.split("\n")
@@ -253,14 +255,20 @@ def test_item_completions(item: Dict, num_workers: int, eval_type: str) -> Dict:
 def main():
     from str2bool import str2bool
 
+    load_env()
+
     parser = argparse.ArgumentParser(
         description="Run test cases on generated completions.")
-    parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset file with completions.")
-    parser.add_argument("--output_path", type=str, required=True, help="Path to store results.")
-    parser.add_argument("--eval_type", type=str, required=True, choices=["code", "math"], help="Type of evaluation: 'code' for code testing or 'math' for math equivalence")
-    parser.add_argument("--num_workers", type=int, default=4, help="Number of concurrent workers for test execution.")
-    parser.add_argument("--max_items", type=int, default=None, help="Maximum number of items to process (for debugging).")
-    parser.add_argument("--debug", type=str2bool, default=False)
+    # Namespaced env vars avoid collisions across scripts; unprefixed vars remain supported for compatibility.
+    data_path_default = env_str("SELF_PLAY_EVAL_DATA_PATH") or env_str("DATA_PATH")
+    output_path_default = env_str("SELF_PLAY_EVAL_OUTPUT_PATH") or env_str("OUTPUT_PATH")
+    eval_type_default = env_str("SELF_PLAY_EVAL_TYPE") or env_str("EVAL_TYPE")
+    parser.add_argument("--data_path", type=str, default=data_path_default, required=data_path_default is None, help="Path to the dataset file with completions.")
+    parser.add_argument("--output_path", type=str, default=output_path_default, required=output_path_default is None, help="Path to store results.")
+    parser.add_argument("--eval_type", type=str, default=eval_type_default, required=eval_type_default is None, choices=["code", "math"], help="Type of evaluation: 'code' for code testing or 'math' for math equivalence")
+    parser.add_argument("--num_workers", type=int, default=env_int("SELF_PLAY_EVAL_NUM_WORKERS", default=None) or env_int("NUM_WORKERS", default=4), help="Number of concurrent workers for test execution.")
+    parser.add_argument("--max_items", type=int, default=env_int("SELF_PLAY_EVAL_MAX_ITEMS", default=None) or env_int("MAX_ITEMS", default=None), help="Maximum number of items to process (for debugging).")
+    parser.add_argument("--debug", type=str2bool, default=env_bool("SELF_PLAY_EVAL_DEBUG", default=None) or env_bool("DEBUG", default=False))
 
     args = parser.parse_args()
 
