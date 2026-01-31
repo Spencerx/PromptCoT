@@ -5,6 +5,8 @@ from pathlib import Path
 from tqdm import tqdm
 from utils import DuplicateChecker
 
+from env_config import load_env, env_float, env_int, env_str
+
 
 """
 Deduplicate problems across multiple JSONL shards.
@@ -99,6 +101,8 @@ def write_results(results, output_file):
 
 
 def main():
+    load_env()
+
     parser = argparse.ArgumentParser(
         description="Deduplicate problems from JSONL files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -135,17 +139,22 @@ Notes:
         """
     )
 
+    # Namespaced env vars avoid collisions across scripts; unprefixed vars remain supported for compatibility.
+    pattern_default = env_str("DEDUP_PATTERN") or env_str("PATTERN")
     parser.add_argument(
         "--pattern",
         type=str,
-        required=True,
+        default=pattern_default,
+        required=pattern_default is None,
         help="File pattern with a `{}` placeholder for the shard index (e.g., 'data/trace{}.jsonl')."
     )
 
+    indices_default = env_str("DEDUP_INDICES") or env_str("INDICES")
     parser.add_argument(
         "--indices",
         type=str,
-        required=True,
+        default=indices_default,
+        required=indices_default is None,
         help=(
             "Indices to process, as comma-separated values and/or ranges. "
             "Ranges are end-exclusive (e.g., '0-60' means 0..59). "
@@ -156,14 +165,16 @@ Notes:
     parser.add_argument(
         "--exclude",
         type=str,
-        default="",
+        default=env_str("DEDUP_EXCLUDE") or env_str("EXCLUDE", default=""),
         help="Comma-separated indices to exclude (e.g., '0,2,5').",
     )
 
+    output_default = env_str("DEDUP_OUTPUT") or env_str("OUTPUT")
     parser.add_argument(
         "--output",
         type=str,
-        required=True,
+        default=output_default,
+        required=output_default is None,
         help="Output JSONL path (e.g., 'output/deduplicated.jsonl').",
     )
 
@@ -171,23 +182,21 @@ Notes:
         "--task-type",
         type=str,
         choices=["code", "math"],
-        default="code",
+        default=env_str("DEDUP_TASK_TYPE") or env_str("TASK_TYPE", default="code"),
         help="Prompt formatting for output items: 'code' or 'math' (default: code).",
     )
 
     parser.add_argument(
         "--threshold",
         type=float,
-        default=0.2,
-        help=(
-            "Fuzzy duplicate threshold (lower is more aggressive; default: 0.2)."
-        ),
+        default=env_float("DEDUP_THRESHOLD", default=None) or env_float("THRESHOLD", default=0.2),
+        help="Fuzzy duplicate threshold (lower is more aggressive; default: 0.2).",
     )
 
     parser.add_argument(
         "--min-word-length",
         type=int,
-        default=4,
+        default=env_int("DEDUP_MIN_WORD_LENGTH", default=None) or env_int("MIN_WORD_LENGTH", default=4),
         help="Minimum word length considered for fuzzy duplicate detection (default: 4).",
     )
 

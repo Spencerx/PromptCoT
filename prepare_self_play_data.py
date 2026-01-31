@@ -7,11 +7,15 @@ import argparse
 from utils import load_test_problems, fix_qwq_completion, get_after_think
 from eval.qwen_math import extract_answer, strip_string
 
+from env_config import load_env, env_str
+
 
 if __name__ == "__main__":
+    load_env()
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", type=str, default="")
-    parser.add_argument("--output_path", type=str, default="")
+    parser.add_argument("--data_path", type=str, default=env_str("PREPARE_SELF_PLAY_DATA_DATA_PATH") or env_str("DATA_PATH", default=""))
+    parser.add_argument("--output_path", type=str, default=env_str("PREPARE_SELF_PLAY_DATA_OUTPUT_PATH") or env_str("OUTPUT_PATH", default=""))
 
     args = parser.parse_args()
 

@@ -7,6 +7,8 @@ from functools import partial
 from utils import fix_gptoss_completion, get_after_think
 from transformers import AutoTokenizer
 
+from env_config import load_env, env_int, env_str
+
 
 def qwq_prompt(problem):
     """Generate prompt template for QWQ model."""
@@ -71,12 +73,17 @@ def process_item_batch(items_batch, tokenizer_path, max_len, min_len):
 
 
 if __name__ == "__main__":
+    load_env()
+
     parser = argparse.ArgumentParser(description='Process data files for training')
-    parser.add_argument('--data_path', type=str, required=True, help='Input data file path')
-    parser.add_argument('--output_path', type=str, required=True, help='Output file path')
-    parser.add_argument('--tokenizer_path', type=str, default="/personal/xueliang/hf_models/Qwen2.5-7B-Instruct", help='Tokenizer path')
-    parser.add_argument('--min_len', type=int, default=0, help='Minimum token length')
-    parser.add_argument('--max_len', type=int, default=16384, help='Maximum token length')
+    # Namespaced env vars avoid collisions across scripts; unprefixed vars remain supported for compatibility.
+    data_path_default = env_str("PREPARE_SFT_DATA_CODE_DATA_PATH") or env_str("DATA_PATH")
+    output_path_default = env_str("PREPARE_SFT_DATA_CODE_OUTPUT_PATH") or env_str("OUTPUT_PATH")
+    parser.add_argument('--data_path', type=str, default=data_path_default, required=data_path_default is None, help='Input data file path')
+    parser.add_argument('--output_path', type=str, default=output_path_default, required=output_path_default is None, help='Output file path')
+    parser.add_argument('--tokenizer_path', type=str, default=env_str("PREPARE_SFT_DATA_CODE_TOKENIZER_PATH") or env_str("TOKENIZER_PATH", default="/personal/xueliang/hf_models/Qwen2.5-7B-Instruct"), help='Tokenizer path')
+    parser.add_argument('--min_len', type=int, default=env_int("PREPARE_SFT_DATA_CODE_MIN_LEN", default=None) or env_int("MIN_LEN", default=0), help='Minimum token length')
+    parser.add_argument('--max_len', type=int, default=env_int("PREPARE_SFT_DATA_CODE_MAX_LEN", default=None) or env_int("MAX_LEN", default=16384), help='Maximum token length')
 
     args = parser.parse_args()
 
